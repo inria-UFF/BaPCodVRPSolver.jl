@@ -18,15 +18,13 @@ Open the Julia REPL and type:
 ```
 
 Set the *LD_LIBRARY_PATH* environment variable with the path to the subdirectory of your CPLEX installation which contains the executable files and shared libraries.
-
 For example, if your CPLEX is installed at */opt/ibm/ILOG/CPLEX_Studio1210* and you are using Bash, you can declare it in the ~/.bashrc:
 
 ```
 export LD_LIBRARY_PATH=/opt/ibm/ILOG/CPLEX_Studio1210/cplex/bin/x86-64_linux/:$LD_LIBRARY_PATH
 ```
 
-Set the *BAPCOD_RCSP_LIB* environment variable with the path to the *BaPCod_RCSP.so* library (requested through the form on the [home page](https://vrpsolver.math.u-bordeaux.fr/)).
-
+Next, set the *BAPCOD_RCSP_LIB* environment variable with the path to the *BaPCod_RCSP.so* library (requested through the form on the [home page](https://vrpsolver.math.u-bordeaux.fr/)).
 For example, if the *BaPCod_RCSP.so* is at */path/to/lib/BaPCod_RCSP.so* and you are using Bash, you can declare it in the ~/.bashrc:
 
 ```
