@@ -33,7 +33,7 @@ export BAPCOD_RCSP_LIB=/path/to/lib/BaPCod_RCSP.so
 
 ## Running a application
 
-All the demos available in the website can be used after replacing `using VrpSolver` with `using BaPCodVRPSolver` in the file *src/run.jl*.
+All the demos available in the [VRPSolver website](https://vrpsolver.math.u-bordeaux.fr/) can be used after replacing `using VrpSolver` with `using BaPCodVRPSolver` in the file *src/run.jl*.
 
 For example, the CVRP demo can be invoked for the instance X-n101-k25 using an upper bound of 27591.1 as follows:
 
