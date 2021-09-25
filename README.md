@@ -14,7 +14,7 @@ Other versions of Julia and CPLEX are not guaranteed to work.
 
 Open the Julia REPL and type:
 ```
-    ]add github.com/inria-UFF/BaPCodVRPSolver.jl
+    ]add https://github.com/inria-UFF/BaPCodVRPSolver.jl.git
 ```
 
 Set the *LD_LIBRARY_PATH* environment variable with the path to the subdirectory of your CPLEX installation which contains the executable files and shared libraries.
