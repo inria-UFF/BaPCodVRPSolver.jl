@@ -1,6 +1,6 @@
 module BaPCodVRPSolver
 
-using JuMP, Scanner, LightGraphs, Printf
+using JuMP, LightGraphs, Printf
 include("blockdecomposition/BlockDecomposition.jl")
 include("blockdecompositionextras/BlockDecompositionExtras.jl")
 include("bapcod/BaPCod.jl")
