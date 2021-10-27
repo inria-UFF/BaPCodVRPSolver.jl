@@ -27,6 +27,7 @@ export add_resource!,
        add_graph!,
        define_elementarity_sets_distance_matrix!,
        add_capacity_cut_separator!,
+       add_strongkpath_cut_separator!,
        set_branching_priority!,
        enable_rank1_cuts!,
        disable_rank1_cuts!,
@@ -136,6 +137,7 @@ mutable struct VrpModel
    optimizer::Any
    callbacks::Dict{String,Any}
    cap_cuts_info::Array{CapacityCutInfo}
+   strongkpath_cuts_info::Array{CapacityCutInfo}
    arcs_by_packing_set_pairs::Array{Array{Tuple{VrpGraph, VrpArc}}, 2}
    ryanfoster_constraints::Vector{Tuple{Integer,Integer,Bool}} # (firstPackSetId,secondPackSetId,together)
 end
@@ -207,7 +209,7 @@ function VrpModel()
    VrpModel(VrpBlockModel(), VrpGraph[], 
            Array{Tuple{VrpGraph,Int}, 1}[], NoSet, NoSet,
            Dict{String,Int}(), Any[], Any[], true,
-	   nothing, Dict{String,Any}(), CapacityCutInfo[], Array{Array{Tuple{VrpGraph, VrpArc}},2}(undef, 0, 0),
+	   nothing, Dict{String,Any}(), CapacityCutInfo[], CapacityCutInfo[], Array{Array{Tuple{VrpGraph, VrpArc}},2}(undef, 0, 0),
       Vector{Tuple{Integer,Integer,Bool}}())
 end
 
@@ -1359,6 +1361,82 @@ function add_capacity_cut_separators_to_optimizer(optimizer::VrpOptimizer)
    end
 end
 
+"""
+    add_strongkpath_cut_separator!(model::VrpModel, demands::Array{Tuple{Array{Tuple{VrpGraph,Int}, 1},Float64},1}, capacity::Float64)
+
+Define a *strong k-path* (SKP) separator over a collection of packing sets defined on vertices.
+SKP separators cannot be used if the packings sets are defined on arcs.
+
+# Arguments
+- `model::VrpModel`: model to be added the RCC separator.
+- `demands::Array{Tuple{Array{Tuple{VrpGraph,Int}, 1},Float64},1}`: array of pairs of packing set and demand.
+- `capacity::Float64`: capacity considered in the RCC separator.
+
+# Examples
+```julia
+# Let PS be an array of `n` packing sets in vertices, where PS[i] is the i-th packing set
+# Let d[i] be the demand associated with the i-th packing set
+# Let `model` be a VrpModel and Q the capacity to be used in the RCC
+add_capacity_cut_separator!(model, [(PS[i], d[i]) for i in 1:n], Q) # add a RCC separator
+```
+"""
+function add_strongkpath_cut_separator!(model::VrpModel, demands::Array{Tuple{Array{Tuple{VrpGraph,Int}, 1},Float64},1}, capacity::Float64)
+   for (ps_set,d) in demands
+      !(ps_set in model.packing_sets) && error("Collection that is not a packing set was used in a strong k-path cut separator." *
+                                                " Only the packing set collections can be used for add_strongkpath_cut_separator")
+   end
+
+   # create and map variables to all uncovered arcs connecting packing set pairs
+   if !isempty(model.arcs_by_packing_set_pairs)
+      id_demands = [0 for i in 1:length(model.packing_sets)]
+      for (ps_set, d) in demands
+         ps_id = findall(x->x==ps_set, model.packing_sets)
+         id_demands[ps_id[1]] = Int(d)
+      end
+
+      num_missing_arcs = 0
+      uncovered = Tuple{Int, Int}[]
+      dims_psp = size(model.arcs_by_packing_set_pairs)
+      arcs_by_psp = model.arcs_by_packing_set_pairs
+      for head in 1:dims_psp[1], tail in (head + 1):dims_psp[2]
+         if (id_demands[head] > 0) && (id_demands[tail] > 0) && !isempty(arcs_by_psp[head,tail])
+            push!(uncovered, (head, tail))
+            num_missing_arcs += length(arcs_by_psp[head,tail])
+         end
+      end
+      if length(uncovered) > 0
+         println("VrpSolver: adding $(length(uncovered)) internal variables mapping to ",
+            "$num_missing_arcs arcs for use by strong k-path cuts"
+         )
+      end
+      if num_missing_arcs > 0
+         @variable(model.formulation,
+            RCCsepX[ps_pair in uncovered], Int
+         )
+         for (head, tail) in uncovered
+            for (graph, arc) in arcs_by_psp[head, tail]
+               add_arc_var_mapping!(graph, arc.id, RCCsepX[(head, tail)])
+            end
+            arcs_by_psp[head, tail] = Array{Tuple{VrpGraph, VrpArc}}(undef, 0)
+         end
+      end
+   end
+
+   push!(model.strongkpath_cuts_info, CapacityCutInfo(demands, capacity))
+end
+
+function add_strongkpath_cut_separators_to_optimizer(optimizer::VrpOptimizer)
+   user_model = optimizer.user_model
+   for cap_cut_info in user_model.strongkpath_cuts_info
+      demands = [0 for i in 1:length(user_model.packing_sets)]
+      for (ps_set, d) in cap_cut_info.demands
+         ps_id = findall(x->x==ps_set, user_model.packing_sets)
+         demands[ps_id[1]] = Int(d)
+      end
+      add_rcsp_strongkpath_cuts!(optimizer.formulation, Int(cap_cut_info.capacity), demands, is_facultative = false, root_priority_level = 1.0)
+   end
+end
+
 function get_mapped_containers_names(user_model::VrpModel)
    user_form = user_model.formulation
    user_var_to_graphs = extract_user_var_to_graphs(user_model)
@@ -1638,6 +1716,7 @@ function VrpOptimizer(user_model::VrpModel, param_file::String, instance_name = 
 
    add_callbacks_to_optimizer(optimizer)
    add_capacity_cut_separators_to_optimizer(optimizer)
+   add_strongkpath_cut_separators_to_optimizer(optimizer)
 
    return optimizer
 end

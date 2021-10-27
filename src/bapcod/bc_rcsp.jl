@@ -166,6 +166,10 @@ function register_rcsp_genericcuts!(m)
       (max_cap, dem, isfac, rpl, nrpl) = cut[2]
       wbcr_add_generic_capacity_cut(c_model, max_cap, dem, length(dem), isfac,
                                     rpl, nrpl)
+    elseif cut[1] == :strongkpath                                    
+      (max_cap, dem, isfac, rpl, nrpl) = cut[2]
+      wbcr_add_generic_strongkpath_cut(c_model, max_cap, dem, length(dem), isfac,
+                                       rpl, nrpl)
     elseif cut[1] == :limmemrank1
       wbc_add_generic_lim_mem_one_cut(c_model)
     elseif cut[1] == :clique

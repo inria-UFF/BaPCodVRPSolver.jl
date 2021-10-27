@@ -37,6 +37,7 @@ export  add_edge!,
         add_packing_set_to_packing_set_cut_neighbourhood!,
 	    set_elementarity_sets_distance_matrix!,
         add_rcsp_capacity_cuts!,
+        add_rcsp_strongkpath_cuts!,
         add_rcsp_clique_cuts!,
         add_rcsp_lim_mem_rank1_cuts!,
         generate_rcsp_oracle_for_dw_sp!,
@@ -591,6 +592,25 @@ function add_rcsp_capacity_cuts!(model::JuMP.Model, max_capacity, demands;
   cint_demands = [Cint(d) for d in demands]
   args = (max_capacity, cint_demands, is_facultative, root_priority_level, non_root_priority_level)
   push!(model.ext[:RCSP_generic_cuts], (:capacity, args))
+end
+
+
+"""
+    add_rcsp_strongkpath_cuts!(model::JuMP.Model, max_capacity, demands,
+                               is_facultative = true, root_priority_level = 1.0,
+                               non_root_priority_level = 1.0)
+
+Add strong k-path cut
+"""
+function add_rcsp_strongkpath_cuts!(model::JuMP.Model, max_capacity, demands;
+                                    is_facultative = true, root_priority_level = 1.0,
+                                    non_root_priority_level = 1.0)
+  if !haskey(model.ext, :RCSP_generic_cuts)
+    model.ext[:RCSP_generic_cuts] = Vector{Tuple}() # Pair (:type, args)
+  end
+  cint_demands = [Cint(d) for d in demands]
+  args = (max_capacity, cint_demands, is_facultative, root_priority_level, non_root_priority_level)
+  push!(model.ext[:RCSP_generic_cuts], (:strongkpath, args))
 end
 
 """

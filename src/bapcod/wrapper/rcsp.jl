@@ -160,6 +160,16 @@ function wbcr_add_generic_capacity_cut(c_model::Ptr{Cvoid}, max_cap::Integer,
   (status != 1) && error("Cannot add the generic capacity cut generator.")
 end
 
+function wbcr_add_generic_strongkpath_cut(c_model::Ptr{Cvoid}, max_cap::Integer,
+  dem::Array, dem_length::Integer, is_fac::Integer, root_prio_lvl::Cdouble,
+  non_root_prio_lvl::Cdouble)
+  status = @bcr_ccall("addGenericStrongKPathCut", Cint, (Ptr{Cvoid}, Cint,
+                                                      Ptr{Cint}, Cint, Cint, Cdouble, Cdouble),
+                          c_model, Cint(max_cap), dem, Cint(dem_length), Cint(is_fac),
+                          root_prio_lvl, non_root_prio_lvl)
+  (status != 1) && error("Cannot add the generic strong k-path cut generator.")
+end
+
 function wbc_add_generic_clique_cut(c_model::Ptr{Cvoid})
   status = @bcr_ccall("addGenericCliqueCut", Cint, (Ptr{Cvoid},),
                                                         c_model)
