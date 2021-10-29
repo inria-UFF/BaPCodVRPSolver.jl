@@ -5,7 +5,7 @@ The BaPCodVRPSolver.jl package is a Julia interface to use the [VRPSolver](https
 ## Requirements
 
 - Linux (preferably Ubuntu)
-- [Julia](https://julialang.org/downloads/oldreleases/) between 1.2 and 1.5 (preferably 1.4)
+- [Julia](https://julialang.org/downloads/oldreleases/) between 1.0 and 1.5
 - [CPLEX](https://www.ibm.com/products/ilog-cplex-optimization-studio) 12.9 or 12.10 
 
 Other versions of Julia and CPLEX are not guaranteed to work.
