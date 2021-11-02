@@ -437,7 +437,7 @@ function optimize!(m::BcMathProgModel)
     # Register generic variable functors & constraints functors
     # These functors are removed in the latest vesion of BaPCod
     #(m.solver.genvarcallbacks != nothing) && register_genvarcb!(m)
-    #(m.solver.gencstrcallbacks != nothing) && register_gencstrcb!(m)
+    (m.solver.gencstrcallbacks != nothing) && register_gencstrcb!(m)
     # Register core cuts callbacks
     (m.solver.facultativecuts_cb_func != nothing) && register_facultative_cb!(m)
     # Register facultative cuts callbacks

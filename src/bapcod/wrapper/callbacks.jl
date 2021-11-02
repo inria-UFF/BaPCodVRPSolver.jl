@@ -27,9 +27,8 @@ end
 
 function wbcm_attach_cstr_functor!(c_model::Ptr{Cvoid}, name::Symbol,
                                  c_fct::Ptr{Cvoid}, jump_cstr::Any)
-  # not supported anymore                                 
-  # @bcm_ccall("attachCstrFunctor", Cint, (Ptr{Cvoid}, Ptr{Cchar}, Ptr{Cvoid}, Any),
-  #                                       c_model, name, c_fct, jump_cstr)
+  @bcm_ccall("attachCstrFunctor", Cint, (Ptr{Cvoid}, Ptr{Cchar}, Ptr{Cvoid}, Any),
+                                        c_model, name, c_fct, jump_cstr)
 end
 
 function wbcm_add_dyn_var!(c_model::Ptr{Cvoid}, col_id::Cint, name::Symbol,
