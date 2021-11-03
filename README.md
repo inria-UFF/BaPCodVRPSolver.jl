@@ -1,15 +1,20 @@
 # BaPCodVRPSolver
 
-The BaPCodVRPSolver.jl package is a Julia interface to use the [VRPSolver](https://vrpsolver.math.u-bordeaux.fr/) in
-Linux operating systems.
+The BaPCodVRPSolver.jl package is a Julia interface for [VRPSolver](https://vrpsolver.math.u-bordeaux.fr/). Unlike the
+original distribution, this package allows one to run VRPSolver on any major operating system without Docker.
 
 This package is *only for academic use*.
 
 ## Requirements
 
-- [Julia](https://julialang.org/downloads/oldreleases/) versions 1.0 -- 1.5.4 (versions 1.6 and later will be supported
-  in the future)
-- [CPLEX](https://www.ibm.com/products/ilog-cplex-optimization-studio) versions 12.9 and higher
+- [Julia](https://julialang.org/downloads/oldreleases/) versions 1.0.5 -- 1.5.4.
+- [CPLEX](https://www.ibm.com/products/ilog-cplex-optimization-studio) versions 12.9 and higher.
+- [BaPCod](https://bapcod.math.u-bordeaux.fr/) shared library version 0.66 (see below how to generate it).
+
+Julia versions 1.6 and later are not supported for the moment due to a
+[JuMP issue](https://github.com/jump-dev/JuMP.jl/issues/2438). Support of Julia 1.6 requires a significant work and will
+depend on the number of inquiries for it. Please let the contributors of this package know if this support is critical
+for you.
 
 ## Installation
 
@@ -41,9 +46,9 @@ export BAPCOD_RCSP_LIB=/path/to/lib/libbapcod-shared.so
 If the BaPCod shared library you have does not work for you, or you do not have one, you can produce it in the following
 way.
 
-Download BaPCod source code on its web-page: https://bapcod.math.u-bordeaux.fr/. Then request the BCP_RCSP compiled
-library from Ruslan(point)Sadykov(at)inria(point)fr. Install BaPCod together with the BCP_RCSP library using installations
-instruction in *README.md* file or in the user guide (available on BaPCod web-page).
+Download BaPCod source code on its [web-page](https://bapcod.math.u-bordeaux.fr/). Then request the BCP_RCSP compiled
+library from Ruslan(point)Sadykov(at)inria(point)fr. Install BaPCod together with the BCP_RCSP library using installation
+instructions in the [BaPCod user guide](https://bapcod.math.u-bordeaux.fr/#userguide).
 
 Then run the following command from BapcodFramework folder 
 
@@ -70,4 +75,3 @@ For example, the [CVRP demo](https://vrpsolver.math.u-bordeaux.fr/cvrpdemo.zip) 
 ```
 julia src/run.jl data/X/X-n101-k25.vrp -u 27591.1
 ```
-
