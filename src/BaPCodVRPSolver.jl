@@ -130,6 +130,7 @@ mutable struct VrpModel
    packing_sets::Array{Array{Tuple{VrpGraph,Int}, 1}, 1}
    packing_sets_type::SetType
    elem_sets_type::SetType
+   define_covering_sets::Bool
    branching_priorities::Dict{String,Int}
    branching_exp_families::Array{Any}
    branching_exps::Array{Any}
@@ -207,7 +208,7 @@ It is the main object of the VRPSolver. It is responsible to keep the RCSP graph
 """
 function VrpModel()
    VrpModel(VrpBlockModel(), VrpGraph[], 
-           Array{Tuple{VrpGraph,Int}, 1}[], NoSet, NoSet,
+           Array{Tuple{VrpGraph,Int}, 1}[], NoSet, NoSet, false,
            Dict{String,Int}(), Any[], Any[], true,
 	   nothing, Dict{String,Any}(), CapacityCutInfo[], CapacityCutInfo[], Array{Array{Tuple{VrpGraph, VrpArc}},2}(undef, 0, 0),
       Vector{Tuple{Integer,Integer,Bool}}())
@@ -768,13 +769,14 @@ ps_3 = [(G[2],3),(G[3],2)] # another packing set
 set_vertex_packing_sets!(model, [ps_1, ps_2, ps_3]) # passing the collection of packing sets to the model
 ```
 """
-function set_vertex_packing_sets!(user_model::VrpModel, collection::Array{Array{Tuple{VrpGraph,Int}, 1}, 1})
+function set_vertex_packing_sets!(user_model::VrpModel, collection::Array{Array{Tuple{VrpGraph,Int}, 1}, 1}, define_covering_sets::Bool=false)
    if user_model.elem_sets_type != NoSet
       error("Packing sets cannot be defined after elementarity sets")
    end
    reset_packing_sets(user_model)
    user_model.packing_sets = collection
    user_model.packing_sets_type = VertexSet
+   user_model.define_covering_sets = define_covering_sets
    n = length(collection)
    for ps_id in 1:n
       for (graph, vertex_id) in collection[ps_id]
@@ -1086,8 +1088,12 @@ function generate_pricing_networks(user_model::VrpModel, user_var_to_vars::Dict{
    for graph in user_model.graphs
       nbPackSets = length(user_model.packing_sets)
       nbElemSets = nbPackSets + length(graph.elem_sets)
+      nbCovSets = 0
+      if user_model.define_covering_sets
+         nbCovSets = nbPackSets
+      end
       network = Network(length(graph.vertices), source = graph.source_id, sink = graph.sink_id, elemsets = nbElemSets,
-                        packsets = nbPackSets)
+                        packsets = nbPackSets, covsets = nbCovSets)
       graph.net = network
       #resources and vertices
       for resource in graph.resources
@@ -1112,6 +1118,9 @@ function generate_pricing_networks(user_model::VrpModel, user_var_to_vars::Dict{
          if vertex.packing_set != -1
             add_vertex_to_packing_set!(network, vertex.id, vertex.packing_set)
             attach_elem_set_to_vertex!(network, vertex.id, vertex.packing_set)
+            if user_model.define_covering_sets
+               add_vertex_to_covering_set!(network, vertex.id, vertex.packing_set)
+            end
          elseif vertex.elem_set != -1
             attach_elem_set_to_vertex!(network, vertex.id, nbPackSets + vertex.elem_set)
          end

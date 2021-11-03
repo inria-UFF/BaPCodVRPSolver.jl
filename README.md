@@ -55,7 +55,7 @@ This will produce shared library file *build/Bapcod/libbapcod-shared.so* on Linu
 and *build/Bapcod/Release/bapcod-shared.dll* on Windows.
 
 
-## Running a application
+## Running an application
 
 Firstly, add the folowing dependences:
 
