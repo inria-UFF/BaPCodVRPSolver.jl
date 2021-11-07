@@ -23,19 +23,19 @@ Open the Julia REPL and type:
     ]add https://github.com/inria-UFF/BaPCodVRPSolver.jl.git
 ```
 
-On Linux, set the *LD_LIBRARY_PATH* environment variable with the absolute path to the subdirectory of your CPLEX
+On Linux, set the `LD_LIBRARY_PATH` environment variable with the absolute path to the subdirectory of your CPLEX
 installation which contains the executable files and shared libraries.  For example, if your CPLEX is installed at
-*/opt/ibm/ILOG/CPLEX_Studio1210* and you are using Bash, you can declare it in the ~/.bashrc:
+`/opt/ibm/ILOG/CPLEX_Studio1210` and you are using Bash, you can declare it in the `~/.bashrc`:
 
 ```
 export LD_LIBRARY_PATH=/opt/ibm/ILOG/CPLEX_Studio1210/cplex/bin/x86-64_linux/:$LD_LIBRARY_PATH
 ```
 
-On Windows, be sure that the *PATH* environment variable contains the folder with CPLEX dynamic library.
+On Windows, be sure that the `PATH` environment variable contains the folder with CPLEX dynamic library.
 
-Next, set the *BAPCOD_RCSP_LIB* environment variable with the absolute path to the BaPCod shared library (which has
-*.so* extension on linux, *.dylib* extension on Mac OS, and *.dll* extension on Windows).
-For example, if you are using Bash on Linux, you can declare it in the ~/.bashrc:
+Next, set the `BAPCOD_RCSP_LIB` environment variable with the absolute path to the BaPCod shared library (which has
+`.so` extension on linux, `.dylib` extension on Mac OS, and `.dll` extension on Windows).
+For example, if you are using Bash on Linux, you can declare it in the `~/.bashrc`:
 
 ```
 export BAPCOD_RCSP_LIB=/path/to/lib/libbapcod-shared.so
@@ -56,9 +56,19 @@ Then run the following command from BapcodFramework folder
 cmake --build build --config Release --target bapcod-shared
 ```
 
-This will produce shared library file *build/Bapcod/libbapcod-shared.so* on Linux, *build/Bapcod/libbapcod-shared.dylib* on Mac OS,
-and *build/Bapcod/Release/bapcod-shared.dll* on Windows.
+This will produce shared library file `<path to BaPCod>/build/Bapcod/libbapcod-shared.so` on Linux, `<path to BaPCod>/build/Bapcod/libbapcod-shared.dylib` on Mac OS, and `<path to BaPCod>/build/Bapcod/Release/bapcod-shared.dll` on Windows. Note that the `BAPCOD_RCSP_LIB` environment variable should contain the complete path to this BaPCod shared library, and not to BCP_RCSP library. 
 
+## Troubleshooting
+
+On Linux, you may have error:
+
+```
+ERROR: LoadError: could not load library "<path to>/libbapcod-shared.so"
+<path to Julia>/bin/../lib/julia/libstdc++.so.6: version `GLIBCXX_3.4.26' not found (required by "<path to>/libbapcod-shared.so")
+```
+
+This is because Julia comes with an older version of the `libstdc++.so.6` library. One solution is build Julia from sources. 
+An easier solution is to replace file `<path to Julia>/lib/julia/libstdc++.so.6` with your system `libstdc++.so.6` file. For local machines it is usually located in the folder `/usr/lib/x86_64-linux-gnu/`.
 
 ## Running an application
 
