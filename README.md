@@ -46,17 +46,16 @@ export BAPCOD_RCSP_LIB=/path/to/lib/libbapcod-shared.so
 If the BaPCod shared library you have does not work for you, or you do not have one, you can produce it in the following
 way.
 
-Download BaPCod source code on its [web-page](https://bapcod.math.u-bordeaux.fr/). Then request the BCP_RCSP compiled
-library from Ruslan(point)Sadykov(at)inria(point)fr. Install BaPCod together with the BCP_RCSP library using installation
-instructions in the [BaPCod user guide](https://bapcod.math.u-bordeaux.fr/#userguide).
+Download BaPCod source code on its [web-page](https://bapcod.math.u-bordeaux.fr/). Then request the RCSP (resource constrained shortest path) compiled
+library from Ruslan(point)Sadykov(at)inria(point)fr. Please specify your OS in your request. Install BaPCod together with the RCSP library using installation instructions in the [BaPCod user guide](https://bapcod.math.u-bordeaux.fr/#userguide).
 
-Then run the following command from BapcodFramework folder 
+Then run the following command from the folder you have installed BaPCod
 
 ```
 cmake --build build --config Release --target bapcod-shared
 ```
 
-This will produce shared library file `<path to BaPCod>/build/Bapcod/libbapcod-shared.so` on Linux, `<path to BaPCod>/build/Bapcod/libbapcod-shared.dylib` on Mac OS, and `<path to BaPCod>/build/Bapcod/Release/bapcod-shared.dll` on Windows. Note that the `BAPCOD_RCSP_LIB` environment variable should contain the complete path to this BaPCod shared library, and not to BCP_RCSP library. 
+This will produce shared library file `<path to BaPCod>/build/Bapcod/libbapcod-shared.so` on Linux, `<path to BaPCod>/build/Bapcod/libbapcod-shared.dylib` on Mac OS, and `<path to BaPCod>/build/Bapcod/Release/bapcod-shared.dll` on Windows. Note that the `BAPCOD_RCSP_LIB` environment variable should contain the absolute path to this BaPCod shared library, and not to RCSP library. 
 
 ## Troubleshooting
 
