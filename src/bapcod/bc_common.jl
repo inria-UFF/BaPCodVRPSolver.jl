@@ -1,27 +1,8 @@
-# const libdevjulia = joinpath(dirname(ENV["BAPCOD_RCSP_LIB"]),"bin/bapcod_lib/libdevjulia.so")
-#
 if !haskey(ENV, "BAPCOD_RCSP_LIB")
   error("The env. variable BAPCOD_RCSP_LIB was not set with the BaPCod+RCSP library path!")
 end
 
-# if occursin("64", Sys.MACHINE) && occursin("apple", Sys.MACHINE)
-#   libdevjulia = joinpath(dirname(ENV["BAPCOD_RCSP_LIB"]),"bin/bapcod_lib/libdevjulia.dylib")
-# elseif occursin("64", Sys.MACHINE) && occursin("linux", Sys.MACHINE)
-#   libdevjulia = joinpath(dirname(ENV["BAPCOD_RCSP_LIB"]),"bin/bapcod_lib/libdevjulia.so")
-# else
-#   error("$(Sys.MACHINE) not supported. Please open an issue.")
-# end
-
 libdevjulia = ENV["BAPCOD_RCSP_LIB"]
-
-depsfile = joinpath(dirname(@__FILE__), "deps/deps.jl")
-
-# const libdevjulia = joinpath(dirname(ENV["BAPCOD_RCSP_LIB"]),"bin/bapcod_lib/libdevjulia.so")
-
-const lib_pisinger_knp = joinpath(dirname(@__FILE__),"bin/bapcod_lib/lib_pisinger_knp.so")
-
-#const libdevjulia = "/home/imb/gmarqu100p/bapcodframework/julia_bacpcod/libdevjulia.so"
-#const lib_pisinger_knp = "/home/imb/gmarqu100p/bapcodframework/julia_bacpcod/lib_pisinger_knp.so"
 
 ## ccall redef
 macro bcm_ccall(func, args...)
@@ -57,10 +38,11 @@ macro bcr_ccall(func, args...)
 end
 
 macro pisinger_knp_ccall(func, args...)
-  args = map(esc, args)
-  quote
-    ccall(($func, $lib_pisinger_knp), $(args...))
-  end
+  # support removed
+  # args = map(esc, args)
+  # quote
+  #   ccall(($func, $lib_pisinger_knp), $(args...))
+  # end
 end
 
 isa_jumparray(contnr) = isa(contnr, JuMP.JuMPArray)

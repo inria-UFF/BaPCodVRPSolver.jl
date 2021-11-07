@@ -116,7 +116,6 @@ end
 export BaPCodSolver
 
 function BaPCodSolver(;kwargs...)
-  include(depsfile)
   BaPCodSolver(kwargs, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing)
 end
 
