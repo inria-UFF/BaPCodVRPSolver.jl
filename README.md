@@ -79,7 +79,7 @@ Firstly, add the folowing dependences:
    ]add JuMP, ArgParse
 ```
 
-All the demos available in the [VRPSolver website](https://vrpsolver.math.u-bordeaux.fr/) will work after replacing the content of the first line in *src/run.jl* by `using BaPCodVRPSolver, JuMP, ArgParse`. 
+All the demos available in the [VRPSolver website](https://vrpsolver.math.u-bordeaux.fr/) will work after replacing `using VrpSolver` with `using BaPCodVRPSolver` in the file *src/run.jl*. Also, you should comment/remove the using of CPLEX.jl at the beginning of *src/run.jl* if the package is not installed. 
 
 For example, the [CVRP demo](https://vrpsolver.math.u-bordeaux.fr/cvrpdemo.zip) can be invoked (after making the aforementioned replacement) for the instance X-n101-k25 using an upper bound of 27591.1 as follows:
 
