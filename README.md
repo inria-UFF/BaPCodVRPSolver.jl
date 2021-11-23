@@ -41,6 +41,8 @@ For example, if you are using Bash on Linux, you can declare it in the `~/.bashr
 export BAPCOD_RCSP_LIB=/path/to/lib/libbapcod-shared.so
 ```
 
+If you want to use the [complete formulation](https://vrpsolver.math.u-bordeaux.fr/doc/methods.html#VrpSolver.get_complete_formulation) (the one that includes mapping constraints with λ variables for paths, and it's very useful for debugging), then you have to configurate a MIP solver via [JuMP 0.18](https://jump.dev/JuMP.jl/0.18/) interface for that (e.g. you can install [CPLEX.jl](https://github.com/jump-dev/CPLEX.jl), which requires CPLEX version 12.10 or higher).  
+
 ## Producing BaPCod shared library
 
 If the BaPCod shared library you have does not work for you, or you do not have one, you can produce it in the following
@@ -74,10 +76,10 @@ An easier solution is to replace file `<path to Julia>/lib/julia/libstdc++.so.6`
 Firstly, add the folowing dependences:
 
 ```
-   ]add JuMP, CPLEX, ArgParse
+   ]add JuMP, ArgParse
 ```
 
-All the demos available in the [VRPSolver website](https://vrpsolver.math.u-bordeaux.fr/) will work after replacing `using VrpSolver` with `using BaPCodVRPSolver` in the file *src/run.jl*.
+All the demos available in the [VRPSolver website](https://vrpsolver.math.u-bordeaux.fr/) will work after replacing the content of the first line in *src/run.jl* by `using BaPCodVRPSolver, JuMP, ArgParse`. 
 
 For example, the [CVRP demo](https://vrpsolver.math.u-bordeaux.fr/cvrpdemo.zip) can be invoked (after making the aforementioned replacement) for the instance X-n101-k25 using an upper bound of 27591.1 as follows:
 
