@@ -172,6 +172,7 @@ mutable struct VrpOptimizer
    mapped_container_names::Vector{String}
    ignored_container_names::Vector{String}
    stats::Dict{} # execution statistics
+   baptreedot_file::String
 end
 
 contains(p, s) = findnext(s, p, 1) != nothing
@@ -1660,7 +1661,7 @@ function set_branching_priorities_in_optimizer(user_model::VrpModel, formulation
 end
 
 """
-    VrpOptimizer(user_model::VrpModel, param_file::String, instance_name = "")
+    VrpOptimizer(user_model::VrpModel, param_file::String, instance_name = ""; baptreedot="BaPTree.dot")
 
 Build an optimizer for a VrpModel.
 
@@ -1670,8 +1671,9 @@ Build an optimizer for a VrpModel.
 
 # Optional arguments
 - `instance_name::String`: the instance name to be shown in the results line (line with execution statistics).
+- `baptreedot::String`: path to the file to output the BaP Tree in dot format.
 """
-function VrpOptimizer(user_model::VrpModel, param_file::String, instance_name = "")
+function VrpOptimizer(user_model::VrpModel, param_file::String, instance_name = ""; baptreedot="BaPTree.dot")
 
    #creating optimizer formulation
    formulation, user_var_to_vars, var_container_name_to_ids, integer_objective, 
@@ -1715,12 +1717,12 @@ function VrpOptimizer(user_model::VrpModel, param_file::String, instance_name = 
       println("VRPSolver warning: unmapped $name vars were ignored because there are mapped $name vars")
       flush(stdout)
    end
-   optimizer = VrpOptimizer(user_model, param_file, instance_name,
+   optimizer = VrpOptimizer(user_model, param_file, instance_name, 
 	                    formulation, user_var_to_vars,
 			    Dict{String,CallbackInfo}(),
 			    Dict{JuMP.Variable,Float64}[],
 			    integer_objective, -1,
-                            mapped_names, ignored_names, Dict())
+                            mapped_names, ignored_names, Dict(), baptreedot)
    user_model.optimizer = optimizer
 
    add_callbacks_to_optimizer(optimizer)
@@ -1747,7 +1749,7 @@ optimizer = VrpOptimizer(model, "path_to_config/config.cfg")
 function optimize!(optimizer::VrpOptimizer)
    optimizer.formulation.solver = BaPCodSolver(
 	     param_file = optimizer.param_file,
-	     integer_objective = optimizer.integer_objective,
+	     integer_objective = optimizer.integer_objective, baptreedot_file = optimizer.baptreedot_file,
 	     user_params = "--MaxNbOfStagesInColGenProcedure 3 --colGenSubProbSolMode 3 --MipSolverMultiThread 1 --ApplyStrongBranchingEvaluation true" )
    status = solve(optimizer.formulation)
    has_solution = register_solutions(optimizer)
@@ -2037,7 +2039,7 @@ function get_enum_paths(model::VrpModel, paramfile::String)
    optimizer.formulation.ext[:complete_formulation] = true
    optimizer.formulation.solver = BaPCodSolver(
 	      param_file = optimizer.param_file,
-	      integer_objective = optimizer.integer_objective,
+	      integer_objective = optimizer.integer_objective, baptreedot_file = optimizer.baptreedot_file,
 	      user_params = "--MaxNbOfStagesInColGenProcedure 3 --colGenSubProbSolMode 3 --MipSolverMultiThread 1 --ApplyStrongBranchingEvaluation true" )
    solve(optimizer.formulation)
    paths = []
