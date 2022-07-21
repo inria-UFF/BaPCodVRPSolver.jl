@@ -141,6 +141,7 @@ mutable struct VrpModel
    strongkpath_cuts_info::Array{CapacityCutInfo}
    arcs_by_packing_set_pairs::Array{Array{Tuple{VrpGraph, VrpArc}}, 2}
    ryanfoster_constraints::Vector{Tuple{Integer,Integer,Bool}} # (firstPackSetId,secondPackSetId,together)
+   save_standalone::String
 end
 
 mutable struct DynamicConstrInfo
@@ -207,12 +208,12 @@ Create an empty VRPSolver model.
 It is the main object of the VRPSolver. It is responsible to keep the RCSP graphs (of type VrpGraph), formulation, packing sets, rounded capacity cuts and other definitions (like branching).
 
 """
-function VrpModel()
+function VrpModel(;save_standalone="")
    VrpModel(VrpBlockModel(), VrpGraph[], 
            Array{Tuple{VrpGraph,Int}, 1}[], NoSet, NoSet, false,
            Dict{String,Int}(), Any[], Any[], true,
 	   nothing, Dict{String,Any}(), CapacityCutInfo[], CapacityCutInfo[], Array{Array{Tuple{VrpGraph, VrpArc}},2}(undef, 0, 0),
-      Vector{Tuple{Integer,Integer,Bool}}())
+      Vector{Tuple{Integer,Integer,Bool}}(), save_standalone)
 end
 
 """
@@ -1095,6 +1096,10 @@ function generate_pricing_networks(user_model::VrpModel, user_var_to_vars::Dict{
       end
       network = Network(length(graph.vertices), source = graph.source_id, sink = graph.sink_id, elemsets = nbElemSets,
                         packsets = nbPackSets, covsets = nbCovSets)
+      if user_model.save_standalone != ""
+         save_standalone!(network, user_model.save_standalone)
+      end
+                  
       graph.net = network
       #resources and vertices
       for resource in graph.resources
