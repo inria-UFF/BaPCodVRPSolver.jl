@@ -163,9 +163,9 @@ function register_rcsp_genericcuts!(m)
   for cut in m.solver.rcsp_generic_cuts
     c_model = m.inner.ptr
     if cut[1] == :capacity
-      (max_cap, dem, isfac, rpl, nrpl) = cut[2]
+      (max_cap, dem, isfac, rpl, nrpl, tpcri) = cut[2]
       wbcr_add_generic_capacity_cut(c_model, max_cap, dem, length(dem), isfac,
-                                    rpl, nrpl)
+                                    rpl, nrpl, tpcri)
     elseif cut[1] == :strongkpath                                    
       (max_cap, dem, isfac, rpl, nrpl) = cut[2]
       wbcr_add_generic_strongkpath_cut(c_model, max_cap, dem, length(dem), isfac,

@@ -152,11 +152,11 @@ end
 
 function wbcr_add_generic_capacity_cut(c_model::Ptr{Cvoid}, max_cap::Integer,
   dem::Array, dem_length::Integer, is_fac::Integer, root_prio_lvl::Cdouble,
-  non_root_prio_lvl::Cdouble)
+  non_root_prio_lvl::Cdouble, two_path_cuts_res_id::Integer)
   status = @bcr_ccall("addGenericCapacityCut", Cint, (Ptr{Cvoid}, Cint,
-                                                      Ptr{Cint}, Cint, Cint, Cdouble, Cdouble),
+                                                      Ptr{Cint}, Cint, Cint, Cdouble, Cdouble, Cint),
                           c_model, Cint(max_cap), dem, Cint(dem_length), Cint(is_fac),
-                          root_prio_lvl, non_root_prio_lvl)
+                          root_prio_lvl, non_root_prio_lvl, Cint(two_path_cuts_res_id))
   (status != 1) && error("Cannot add the generic capacity cut generator.")
 end
 

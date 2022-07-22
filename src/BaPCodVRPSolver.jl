@@ -122,6 +122,7 @@ end
 mutable struct CapacityCutInfo
    demands::Array{Tuple{Array{Tuple{VrpGraph,Int}, 1},Float64},1}
    capacity::Float64
+   two_path_cuts_res_id::Int
 end
 
 mutable struct VrpModel
@@ -315,6 +316,7 @@ function add_graph!(model::VrpModel, graph::VrpGraph)
             graph.vertices[vertex].res_bounds[res_id] = graph.res_bounds_vertex[key]
          end
       else
+         graph.vertices[vertex].res_bounds[res_id] = graph.res_bounds_vertex[key]
          for arc in graph.incoming_arcs[vertex]
             arc.res_bounds[res_id] = graph.res_bounds_vertex[key]
          end
@@ -1115,7 +1117,11 @@ function generate_pricing_networks(user_model::VrpModel, user_var_to_vars::Dict{
                res_seq_id = resource_id_in_bapcod(resource, graph)
                vertexspecialconsumptionbounds!(network, vertex.id, res_seq_id, lb = vertex.res_bounds[resource.id][1], ub = vertex.res_bounds[resource.id][2])
             else
-               vertexconsumptionbounds!(network, vertex.id, resource.id, lb = -1e12, ub = 1e12)
+               if !haskey(vertex.res_bounds, resource.id)
+                  vertexconsumptionbounds!(network, vertex.id, resource.id, lb = -1e12, ub = 1e12)
+               else   
+                  vertexconsumptionbounds!(network, vertex.id, resource.id, lb = vertex.res_bounds[resource.id][1], ub = vertex.res_bounds[resource.id][2])
+               end
             end
          end
       end
@@ -1319,7 +1325,8 @@ RCC separators cannot be used if the packings sets are defined on arcs.
 add_capacity_cut_separator!(model, [(PS[i], d[i]) for i in 1:n], Q) # add a RCC separator
 ```
 """
-function add_capacity_cut_separator!(model::VrpModel, demands::Array{Tuple{Array{Tuple{VrpGraph,Int}, 1},Float64},1}, capacity::Float64)
+function add_capacity_cut_separator!(model::VrpModel, demands::Array{Tuple{Array{Tuple{VrpGraph,Int}, 1},Float64},1}, capacity::Float64, 
+                                     two_path_cuts_res_id::Int = -1)
    for (ps_set,d) in demands
       !(ps_set in model.packing_sets) && error("Collection that is not a packing set was used in a capacity cut separator." *
                                                 " Only the packing set collections can be used for add_capacity_cut_separator")
@@ -1361,7 +1368,7 @@ function add_capacity_cut_separator!(model::VrpModel, demands::Array{Tuple{Array
       end
    end
 
-   push!(model.cap_cuts_info, CapacityCutInfo(demands, capacity))
+   push!(model.cap_cuts_info, CapacityCutInfo(demands, capacity, two_path_cuts_res_id))
 end
 
 function add_capacity_cut_separators_to_optimizer(optimizer::VrpOptimizer)
@@ -1372,7 +1379,8 @@ function add_capacity_cut_separators_to_optimizer(optimizer::VrpOptimizer)
          ps_id = findall(x->x==ps_set, user_model.packing_sets)
          demands[ps_id[1]] = Int(d)
       end
-      add_rcsp_capacity_cuts!(optimizer.formulation, Int(cap_cut_info.capacity), demands, is_facultative = false, root_priority_level = 3.0)
+      add_rcsp_capacity_cuts!(optimizer.formulation, Int(cap_cut_info.capacity), demands, is_facultative = false, root_priority_level = 3.0,
+                              two_path_cuts_res_id = cap_cut_info.two_path_cuts_res_id)
    end
 end
 
@@ -1437,7 +1445,7 @@ function add_strongkpath_cut_separator!(model::VrpModel, demands::Array{Tuple{Ar
       end
    end
 
-   push!(model.strongkpath_cuts_info, CapacityCutInfo(demands, capacity))
+   push!(model.strongkpath_cuts_info, CapacityCutInfo(demands, capacity, -1))
 end
 
 function add_strongkpath_cut_separators_to_optimizer(optimizer::VrpOptimizer)

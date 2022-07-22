@@ -585,15 +585,14 @@ Add capacity cut
 """
 function add_rcsp_capacity_cuts!(model::JuMP.Model, max_capacity, demands;
                             is_facultative = true, root_priority_level = 1.0,
-                            non_root_priority_level = 1.0)
+                            non_root_priority_level = 1.0, two_path_cuts_res_id = -1)
   if !haskey(model.ext, :RCSP_generic_cuts)
     model.ext[:RCSP_generic_cuts] = Vector{Tuple}() # Pair (:type, args)
   end
   cint_demands = [Cint(d) for d in demands]
-  args = (max_capacity, cint_demands, is_facultative, root_priority_level, non_root_priority_level)
+  args = (max_capacity, cint_demands, is_facultative, root_priority_level, non_root_priority_level, two_path_cuts_res_id)
   push!(model.ext[:RCSP_generic_cuts], (:capacity, args))
 end
-
 
 """
     add_rcsp_strongkpath_cuts!(model::JuMP.Model, max_capacity, demands,
