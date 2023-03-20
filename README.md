@@ -48,8 +48,7 @@ If you want to use the [complete formulation](https://vrpsolver.math.u-bordeaux.
 If the BaPCod shared library you have does not work for you, or you do not have one, you can produce it in the following
 way.
 
-Download BaPCod source code on its [web-page](https://bapcod.math.u-bordeaux.fr/). Then request the RCSP (resource constrained shortest path) compiled
-library from Ruslan(point)Sadykov(at)inria(point)fr. Please specify your OS in your request. Install BaPCod together with the RCSP library using installation instructions in the [BaPCod user guide](https://bapcod.math.u-bordeaux.fr/#userguide).
+Download BaPCod source code on its [web-page](https://bapcod.math.u-bordeaux.fr/). You need an e-mail address from an academic institution for this. Then, install BaPCod using installation instructions in the [BaPCod user guide](https://bapcod.math.u-bordeaux.fr/#userguide).
 
 Then run the following command from the folder you have installed BaPCod
 
