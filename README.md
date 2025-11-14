@@ -11,10 +11,9 @@ This package is *only for academic use*.
 - [CPLEX](https://www.ibm.com/products/ilog-cplex-optimization-studio) versions 12.9 and higher.
 - [BaPCod](https://bapcod.math.u-bordeaux.fr/) shared library version 0.66 (see below how to generate it).
 
-Julia versions 1.6 and later are not supported for the moment due to a
-[JuMP issue](https://github.com/jump-dev/JuMP.jl/issues/2438). Support of Julia 1.6 requires a significant work and will
-depend on the number of inquiries for it. Please let the contributors of this package know if this support is critical
-for you.
+Julia versions 1.6 and later are not supported by this pacakge due to a
+[JuMP issue](https://github.com/jump-dev/JuMP.jl/issues/2438). Please, look at the [VRPSolver.jl package](https://github.com/tbulhoes/VrpSolver.jl) 
+if you have recent Julia versions.
 
 ## Installation
 
